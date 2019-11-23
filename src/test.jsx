@@ -54,7 +54,7 @@ class GridExample extends Component {
                     const email = params.data.email.trim();
                     const newValue = params.newValue.trim();
                     if (email !== newValue) {
-                        setBooleanVal(true, params.data.id);
+                        setBooleanVal(true);
                         params.data.email = newValue;
                         return true;
                     } else {
@@ -85,10 +85,10 @@ class GridExample extends Component {
             columnDefs: columnDefs
         })
     }
-    setBooleanVal(val, id) {
+    setBooleanVal(val) {
         this.setState({
-            isUpdate: val,
-            rowId: id
+            isUpdate: val
+
         })
     }
 
@@ -118,9 +118,15 @@ class GridExample extends Component {
             rowIndex: props.rowIndex,
             colKey: "email"
         });
+
+        this.setState({
+            rowId: props.rowIndex
+        })
     }
     onUpdate(props) {
-        if (props.data.id !== this.state.rowId ||   !this.state.isUpdate) {
+        console.log("updatte button is situated at ", props.rowIndex , "Editted column is situated at", this.state.rowId);
+
+        if (props.rowIndex !== this.state.rowId || !this.state.isUpdate) {
             swal("Info", "Please edit the value first", "warning");
             return;
         }

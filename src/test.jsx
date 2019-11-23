@@ -97,7 +97,8 @@ class GridExample extends Component {
             .then(res => {
                 console.log(res);
                 this.setState({
-                    rowData: res.data
+                    rowData: res.data,
+                    isUpdate: false
                 })
             }
             )
@@ -124,12 +125,18 @@ class GridExample extends Component {
         })
     }
     onUpdate(props) {
-        console.log("updatte button is situated at ", props.rowIndex , "Editted column is situated at", this.state.rowId);
+        console.log("updatte button is situated at ", props.rowIndex, "Editted column is situated at", this.state.rowId);
 
-        if (props.rowIndex !== this.state.rowId || !this.state.isUpdate) {
+
+        if (!this.state.isUpdate) {
             swal("Info", "Please edit the value first", "warning");
             return;
         }
+        if (props.rowIndex !== this.state.rowId) {
+            swal("Wrong button", "You have clicked on the wrong update button", "error");
+            return;
+        }
+
         confirmAlert({
             title: 'Confirm to submit',
             message: 'Are you sure to do this.',

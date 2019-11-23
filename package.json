@@ -14,7 +14,8 @@
     "react-confirm-alert": "^2.4.1",
     "react-dom": "^16.10.2",
     "react-scripts": "3.2.0",
-    "sass": "^1.23.7"
+    "sass": "^1.23.7",
+    "sweetalert": "^2.1.2"
   },
   "scripts": {
     "start": "react-scripts start",

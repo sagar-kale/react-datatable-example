@@ -9,66 +9,85 @@ import './test.css';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import axios from "axios";
 import { confirmAlert } from 'react-confirm-alert';
+import swal from 'sweetalert';
 
 class GridExample extends Component {
     constructor(props) {
         super(props);
+        this.onUpdate = this.onUpdate.bind(this);
+        this.setBooleanVal = this.setBooleanVal.bind(this);
         this.state = {
+            isUpdate: false,
             modules: AllCommunityModules,
-            columnDefs: [
-                {
-                    headerName: 'Name',
-                    field: "name",
-                    width: 100
-                },
-                {
-                    headerName: 'Email',
-                    field: "email",
-                    width: 100,
-                    valueGetter: function (params) {
-                        return params.data.email;
-                    },
-                    valueSetter: function (params) {
-                        const email = params.data.email.trim();
-                        const newValue = params.newValue.trim();
-                        if (email !== newValue) {
-                            params.data.email = newValue;
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                },
-                {
-                    headerName: 'Emp Id',
-                    field: "id",
-                    width: 90
-                }
-                ,
-                {
-                    headerName: 'Edit',
-                    field: "",
-                    width: 90,
-                    cellRendererFramework: (props) => (<button onClick={() => this.onBtStartEditing(props)}>Edit</button>)
-                },
-                {
-                    headerName: 'Update',
-                    field: "",
-                    width: 90,
-                    cellRendererFramework: (props) => (<button onClick={() => this.onUpdate(props)}>Update</button>)
-                }
-            ],
-            rowData: '',
+            rowData: [],
+            columnDefs: [],
             defaultColDef: {
                 editable: true,
                 resizable: true
             }
+
         };
     }
 
     componentDidMount() {
         this.refreshData();
+        this.loadData(this.setBooleanVal);
+    }
 
+    loadData(setBooleanVal) {
+
+        let columnDefs = [
+            {
+                headerName: 'Name',
+                field: "name",
+                width: 100
+            },
+            {
+                headerName: 'Email',
+                field: "email",
+                width: 100,
+                valueGetter: function (params) {
+                    return params.data.email;
+                },
+                valueSetter: function (params) {
+                    const email = params.data.email.trim();
+                    const newValue = params.newValue.trim();
+                    if (email !== newValue) {
+                        setBooleanVal(true);
+                        params.data.email = newValue;
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            },
+            {
+                headerName: 'Emp Id',
+                field: "id",
+                width: 90
+            }
+            ,
+            {
+                headerName: 'Edit',
+                field: "",
+                width: 90,
+                cellRendererFramework: (props) => (<button onClick={() => this.onBtStartEditing(props)}>Edit</button>)
+            },
+            {
+                headerName: 'Update',
+                field: "",
+                width: 90,
+                cellRendererFramework: (props) => (<button onClick={() => this.onUpdate(props)}>Update</button>)
+            }
+        ];
+        this.setState({
+            columnDefs: columnDefs
+        })
+    }
+    setBooleanVal(val) {
+        this.setState({
+            isUpdate: val
+        })
     }
 
     refreshData() {
@@ -99,6 +118,11 @@ class GridExample extends Component {
         });
     }
     onUpdate(props) {
+        if (!this.state.isUpdate) {
+            swal("Info", "Please edit the value first", "warning");
+            return;
+        }
+
         confirmAlert({
             title: 'Confirm to submit',
             message: 'Are you sure to do this.',
@@ -112,16 +136,16 @@ class GridExample extends Component {
                                 "Access-Control-Allow-Origin": "*",
                             }
                         };
-                        console.log(props.data.id);
+                        console.log(this.state.isUpdate);
                         let data = {
                             id: +props.data.id,
                             email: props.data.email
                         }
                         axios.post(`http://localhost:8080/demo/update`, data, axiosConfig)
-                            .then(res =>
-                                this.setState({
-                                    rowData: res.data
-                                })
+                            .then(res => {
+                                this.setBooleanVal(false);
+                                swal("Update", "Data Updated Successfuly.", "success");
+                            }
                             );
                     }
                 },

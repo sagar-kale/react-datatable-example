@@ -8,6 +8,7 @@ import "@ag-grid-community/all-modules/dist/styles/ag-theme-balham-dark.css";
 import './test.css';
 import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 import axios from "axios";
+import { confirmAlert } from 'react-confirm-alert';
 
 class GridExample extends Component {
     constructor(props) {
@@ -98,29 +99,38 @@ class GridExample extends Component {
         });
     }
     onUpdate(props) {
-        const sure = window.confirm("Are you sure to do this ?");
-        if (!sure) {
-            this.refreshData();
-        } else {
-            console.log(props);
-            let axiosConfig = {
-                headers: {
-                    'Content-Type': 'application/json;charset=UTF-8',
-                    "Access-Control-Allow-Origin": "*",
+        confirmAlert({
+            title: 'Confirm to submit',
+            message: 'Are you sure to do this.',
+            buttons: [
+                {
+                    label: 'Yes',
+                    onClick: () => {
+                        let axiosConfig = {
+                            headers: {
+                                'Content-Type': 'application/json;charset=UTF-8',
+                                "Access-Control-Allow-Origin": "*",
+                            }
+                        };
+                        console.log(props.data.id);
+                        let data = {
+                            id: +props.data.id,
+                            email: props.data.email
+                        }
+                        axios.post(`http://localhost:8080/demo/update`, data, axiosConfig)
+                            .then(res =>
+                                this.setState({
+                                    rowData: res.data
+                                })
+                            );
+                    }
+                },
+                {
+                    label: 'No',
+                    onClick: () => this.refreshData()
                 }
-            };
-            console.log(props.data.id);
-            let data = {
-                id: +props.data.id,
-                email: props.data.email
-            }
-            axios.post(`http://localhost:8080/demo/update`, data, axiosConfig)
-                .then(res =>
-                    this.setState({
-                        rowData: res.data
-                    })
-                )
-        }
+            ]
+        });
     }
 
 

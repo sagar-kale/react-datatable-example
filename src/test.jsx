@@ -18,6 +18,7 @@ class GridExample extends Component {
         this.setBooleanVal = this.setBooleanVal.bind(this);
         this.state = {
             isUpdate: false,
+            rowId: '',
             modules: AllCommunityModules,
             rowData: [],
             columnDefs: [],
@@ -53,7 +54,7 @@ class GridExample extends Component {
                     const email = params.data.email.trim();
                     const newValue = params.newValue.trim();
                     if (email !== newValue) {
-                        setBooleanVal(true);
+                        setBooleanVal(true, params.data.id);
                         params.data.email = newValue;
                         return true;
                     } else {
@@ -84,9 +85,10 @@ class GridExample extends Component {
             columnDefs: columnDefs
         })
     }
-    setBooleanVal(val) {
+    setBooleanVal(val, id) {
         this.setState({
-            isUpdate: val
+            isUpdate: val,
+            rowId: id
         })
     }
 
@@ -118,11 +120,10 @@ class GridExample extends Component {
         });
     }
     onUpdate(props) {
-        if (!this.state.isUpdate) {
+        if (props.data.id !== this.state.rowId ||   !this.state.isUpdate) {
             swal("Info", "Please edit the value first", "warning");
             return;
         }
-
         confirmAlert({
             title: 'Confirm to submit',
             message: 'Are you sure to do this.',
